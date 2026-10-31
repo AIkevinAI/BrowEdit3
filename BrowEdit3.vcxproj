@@ -85,6 +85,7 @@
     <ClCompile Include="browedit\NodeRenderer.cpp" />
     <ClCompile Include="browedit\util\Console.cpp" />
     <ClCompile Include="browedit\util\FileIO.cpp" />
+    <ClCompile Include="browedit\util\I18n.cpp" />
     <ClCompile Include="browedit\util\Util.cpp" />
     <ClCompile Include="browedit\windows\CinematicModeWindow.cpp" />
     <ClCompile Include="browedit\windows\ColorEditWindow.cpp" />
@@ -215,6 +216,7 @@
     <ClInclude Include="browedit\shaders\WaterShader.h" />
     <ClInclude Include="browedit\util\Console.h" />
     <ClInclude Include="browedit\util\FileIO.h" />
+    <ClInclude Include="browedit\util\I18n.h" />
     <ClInclude Include="browedit\util\glfw_keycodes_to_string.h" />
     <ClInclude Include="browedit\util\ResourceManager.h" />
     <ClInclude Include="browedit\util\Tree.h" />
@@ -380,6 +382,7 @@
     <PostBuildEvent>
       <Command>xcopy /y "$(TargetPath)" "$(SolutionDir)"
 xcopy /y "$(OutDir)BrowEdit3.pdb" "$(SolutionDir)"
+if exist "$(SolutionDir)BugTrap-x64.dll" xcopy /y "$(SolutionDir)BugTrap-x64.dll" "$(OutDir)"
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>

@@ -16,25 +16,26 @@
 #include <ShlObj_core.h>
 #include <magic_enum.hpp>
 #include <browedit/HotkeyRegistry.h>
+#include <browedit/util/I18n.h>
 
 using json = nlohmann::json;
 
 std::string Config::isValid() const
 {
 	if (ropath == "")
-		return "Ro path is empty";
+		return _("Ro path is empty");
 
 	if (!std::filesystem::exists(util::utf8_to_iso_8859_1(ropath)))
-		return "Ro path does not exist";
+		return _("Ro path does not exist");
 
 	if (ropath[ropath.size() - 1] != '\\')
-		return "Ro path should end with a \\";
+		return _("Ro path should end with a \\");
 
 	if (!std::filesystem::exists(util::utf8_to_iso_8859_1(ropath) + "data"))
-		return "Please create a data directory in your RO directory";
+		return _("Please create a data directory in your RO directory");
 
 	if (grfEditorPath != "" && !std::filesystem::exists(util::utf8_to_iso_8859_1(grfEditorPath) + "GrfCL.exe"))
-		return "GrfCL.exe not found in grf editor path";
+		return _("GrfCL.exe not found in grf editor path");
 	for (const auto& grf : grfs)
 	{
 		if (!std::filesystem::exists(util::utf8_to_iso_8859_1(grf)))
@@ -49,7 +50,7 @@ bool Config::showWindow(BrowEdit* browEdit)
 {
 	bool close = false;
 	static bool showStyleEditor = false;
-	if (ImGui::Begin("Configuration", 0, ImGuiWindowFlags_NoCollapse))
+	if (ImGui::Begin(_("Configuration"), 0, ImGuiWindowFlags_NoCollapse))
 	{
 		std::string error = isValid();
 		if (error != "")
@@ -59,15 +60,15 @@ bool Config::showWindow(BrowEdit* browEdit)
 			ImGui::PopStyleColor();
 		}
 
-		ImGui::Text("RO Path");
+		ImGui::Text(_("RO Path"));
 		ImGui::InputText("##RO Path", &ropath);
 		ImGui::SameLine();
-		if (ImGui::Button("Browse##rodir"))
+		if (ImGui::Button(_("Browse##rodir")))
 		{
 			auto path = util::SelectPathDialog(util::utf8_to_iso_8859_1(ropath));
 			if (!path.empty()) ropath = util::iso_8859_1_to_utf8(path);
 		}
-		ImGui::Text("GRF Files");
+		ImGui::Text(_("GRF Files"));
 		if(ImGui::BeginListBox("##GRFs"))
 		{
 			for (int i = 0; i < grfs.size(); i++)
@@ -75,7 +76,7 @@ bool Config::showWindow(BrowEdit* browEdit)
 				ImGui::PushID(i);
 				ImGui::InputText("##", &grfs[i]);
 				ImGui::SameLine();
-				if (ImGui::Button("Browse##grf"))
+				if (ImGui::Button(_("Browse##grf")))
 				{
 					std::string initial = util::utf8_to_iso_8859_1(grfs[i]);
 					if (initial.find(":") == std::string::npos)
@@ -88,7 +89,7 @@ bool Config::showWindow(BrowEdit* browEdit)
 					if (!path.empty()) grfs[i] = util::iso_8859_1_to_utf8(path);
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("Remove"))
+				if (ImGui::Button(_("Remove")))
 				{
 					grfs.erase(grfs.begin() + i);
 					i--;
@@ -96,13 +97,13 @@ bool Config::showWindow(BrowEdit* browEdit)
 					continue;
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("Up"))
+				if (ImGui::Button(_("Up")))
 				{
 					if (i > 0)
 						std::swap(grfs[i], grfs[i - 1]);
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("Down"))
+				if (ImGui::Button(_("Down")))
 				{
 					if (i < grfs.size() - 1)
 						std::swap(grfs[i], grfs[i + 1]);
@@ -112,35 +113,49 @@ bool Config::showWindow(BrowEdit* browEdit)
 			ImGui::EndListBox();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Add"))
+		if (ImGui::Button(_("Add")))
 		{
 			grfs.push_back(ropath + "data.grf");
 		}
 
-		ImGui::DragFloat("Field of View", &fov, 0.1f, 1.0f, 180.0f);
-		ImGui::DragFloat("Camera Mouse Speed", &cameraMouseSpeed, 0.05f, 0.01f, 3.0f);
+		ImGui::DragFloat(_("Field of View"), &fov, 0.1f, 1.0f, 180.0f);
+		ImGui::DragFloat(_("Camera Mouse Speed"), &cameraMouseSpeed, 0.05f, 0.01f, 3.0f);
 
-		if (ImGui::Combo("Skin", &style, "Dark\0Light\0Classic\0Tarq\0Mina's Hot Fudge 1.2\0"))
+		if (ImGui::Combo(_("Skin"), &style, "Dark\0Light\0Classic\0Tarq\0Mina's Hot Fudge 1.2\0"))
 		{
 			setStyle(style);
 		}
-		if (ImGui::Button("Style editor"))
+		{
+			auto& langs = i18n::getAvailableLanguages();
+			int langIdx = 0;
+			std::string cur = i18n::getLanguage();
+			for (int i = 0; i < (int)langs.size(); i++)
+				if (langs[i].first == cur) { langIdx = i; break; }
+			std::string langItems;
+			for (auto& l : langs) { langItems += l.second; langItems.push_back('\0'); }
+			if (ImGui::Combo(_("Language"), &langIdx, langItems.c_str()))
+			{
+				language = langs[langIdx].first;
+				i18n::setLanguage(language);
+			}
+		}
+		if (ImGui::Button(_("Style editor")))
 			showStyleEditor = !showStyleEditor;
 
-		ImGui::ColorEdit3("Background Color", glm::value_ptr(backgroundColor));
-		ImGui::ColorEdit3("Wall Edit Selection Color", glm::value_ptr(wallEditSelectionColor));
-		ImGui::ColorEdit3("Wall Edit Highlight Color", glm::value_ptr(wallEditHighlightColor));
-		ImGui::DragFloat2 ("Object Window thumbnail size", &thumbnailSize.x, 1, 32, 512);
-		ImGui::Checkbox("Close object window when adding a model", &closeObjectWindowOnAdd);
-		ImGui::DragFloat("Toolbar Button Size", &toolbarButtonSize, 1, 1, 100);
-		ImGui::ColorEdit4("Toolbar Button Tint", &toolbarButtonTint.x);
-		ImGui::ColorEdit4("Toolbar View Buttons", &toolbarButtonsViewOptions.x);
-		ImGui::ColorEdit4("Toolbar Height Edit", &toolbarButtonsHeightEdit.x);
-		ImGui::ColorEdit4("Toolbar Texture Edit", &toolbarButtonsTextureEdit.x);
-		ImGui::ColorEdit4("Toolbar Object Edit", &toolbarButtonsObjectEdit.x);
-		ImGui::ColorEdit4("Toolbar Wall Edit", &toolbarButtonsWallEdit.x);
-		ImGui::ColorEdit4("Toolbar Gat Edit", &toolbarButtonsGatEdit.x);
-		ImGui::InputInt("Lightmapper threadcount", &lightmapperThreadCount);
+		ImGui::ColorEdit3(_("Background Color"), glm::value_ptr(backgroundColor));
+		ImGui::ColorEdit3(_("Wall Edit Selection Color"), glm::value_ptr(wallEditSelectionColor));
+		ImGui::ColorEdit3(_("Wall Edit Highlight Color"), glm::value_ptr(wallEditHighlightColor));
+		ImGui::DragFloat2 (_("Object Window thumbnail size"), &thumbnailSize.x, 1, 32, 512);
+		ImGui::Checkbox(_("Close object window when adding a model"), &closeObjectWindowOnAdd);
+		ImGui::DragFloat(_("Toolbar Button Size"), &toolbarButtonSize, 1, 1, 100);
+		ImGui::ColorEdit4(_("Toolbar Button Tint"), &toolbarButtonTint.x);
+		ImGui::ColorEdit4(_("Toolbar View Buttons"), &toolbarButtonsViewOptions.x);
+		ImGui::ColorEdit4(_("Toolbar Height Edit"), &toolbarButtonsHeightEdit.x);
+		ImGui::ColorEdit4(_("Toolbar Texture Edit"), &toolbarButtonsTextureEdit.x);
+		ImGui::ColorEdit4(_("Toolbar Object Edit"), &toolbarButtonsObjectEdit.x);
+		ImGui::ColorEdit4(_("Toolbar Wall Edit"), &toolbarButtonsWallEdit.x);
+		ImGui::ColorEdit4(_("Toolbar Gat Edit"), &toolbarButtonsGatEdit.x);
+		ImGui::InputInt(_("Lightmapper threadcount"), &lightmapperThreadCount);
 		if (lightmapperThreadCount < 0)
 			lightmapperThreadCount = 0;
 		if (lightmapperThreadCount > 50)
@@ -152,14 +167,14 @@ bool Config::showWindow(BrowEdit* browEdit)
 			editModes += std::string(e.second) + '\0';
 		}
 
-		ImGui::Combo("Default Editmode", &defaultEditMode, editModes.c_str());
+		ImGui::Combo(_("Default Editmode"), &defaultEditMode, editModes.c_str());
 
-		ImGui::Checkbox("Start in maximized window", &startMaximizedWindow);
-		ImGui::Checkbox("Save a backup of maps when saving", &backup);
-		ImGui::Checkbox("Recalculate quadtree on save", &recalculateQuadtreeOnSave);
+		ImGui::Checkbox(_("Start in maximized window"), &startMaximizedWindow);
+		ImGui::Checkbox(_("Save a backup of maps when saving"), &backup);
+		ImGui::Checkbox(_("Recalculate quadtree on save"), &recalculateQuadtreeOnSave);
 
-		ImGui::Text("Grid Sizes");
-		if (ImGui::BeginListBox("Translate Grid Sizes"))
+		ImGui::Text(_("Grid Sizes"));
+		if (ImGui::BeginListBox(_("Translate Grid Sizes")))
 		{
 			for (int i = 0; i < translateGridSizes.size(); i++)
 			{
@@ -178,7 +193,7 @@ bool Config::showWindow(BrowEdit* browEdit)
 		if (ImGui::Button("+##Translate"))
 			translateGridSizes.push_back(1);
 
-		if (ImGui::BeginListBox("Rotate Grid Sizes"))
+		if (ImGui::BeginListBox(_("Rotate Grid Sizes")))
 		{
 			for (int i = 0; i < rotateGridSizes.size(); i++)
 			{
@@ -198,9 +213,9 @@ bool Config::showWindow(BrowEdit* browEdit)
 			rotateGridSizes.push_back(1);
 
 
-		ImGui::InputText("GRF Editor path", &grfEditorPath);
+		ImGui::InputText(_("GRF Editor path"), &grfEditorPath);
 		ImGui::SameLine();
-		if (ImGui::Button("Browse##grfeditor"))
+		if (ImGui::Button(_("Browse##grfeditor")))
 		{
 			std::string initial = util::utf8_to_iso_8859_1(grfEditorPath);
 			if (initial == "")
@@ -210,9 +225,9 @@ bool Config::showWindow(BrowEdit* browEdit)
 			if (!path.empty()) grfEditorPath = util::iso_8859_1_to_utf8(path);
 		}
 
-		ImGui::InputText("ffmpeg path", &ffmpegPath);
+		ImGui::InputText(_("ffmpeg path"), &ffmpegPath);
 		ImGui::SameLine();
-		if (ImGui::Button("Browse##ffmpegPath"))
+		if (ImGui::Button(_("Browse##ffmpegPath")))
 		{
 			std::string initial = util::utf8_to_iso_8859_1(ffmpegPath);
 			if (initial.find(":") == std::string::npos)
@@ -225,7 +240,7 @@ bool Config::showWindow(BrowEdit* browEdit)
 			if (!path.empty()) ffmpegPath = util::iso_8859_1_to_utf8(path);
 		}
 
-		if (ImGui::Button("Save"))
+		if (ImGui::Button(_("Save")))
 		{
 			if (isValid() == "")
 			{
@@ -237,7 +252,7 @@ bool Config::showWindow(BrowEdit* browEdit)
 			}
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Cancel"))
+		if (ImGui::Button(_("Cancel")))
 		{
 			browEdit->configBegin();
 			if (isValid() == "")
@@ -415,9 +430,38 @@ void Config::defaultHotkeys()
 	std::ifstream in("data\\defaulthotkeys.json");
 	if (!in.is_open())
 	{
-		std::cout << "Warning, data folder is not found. Please use a proper browedit3 distribution, don't try to compile it yourself if you don't know what you're doing" << std::endl;
-		MessageBox(NULL, "Warning, data folder is not found. Please use a proper browedit3 distribution, don't try to compile it yourself if you don't know what you're doing", "Warning, improper use detected", MB_OK);
-		exit(0);
+		char exePath[MAX_PATH] = {0};
+		GetModuleFileNameA(NULL, exePath, MAX_PATH);
+		std::filesystem::path exeDir = std::filesystem::path(exePath).parent_path();
+		std::vector<std::filesystem::path> candidates = {
+			exeDir,
+			exeDir.parent_path(),
+			exeDir.parent_path().parent_path(),
+			exeDir.parent_path().parent_path().parent_path(),
+			std::filesystem::current_path(),
+		};
+		bool found = false;
+		for (auto& p : candidates)
+		{
+			if (p.empty()) continue;
+			auto hotkeyPath = p / "data" / "defaulthotkeys.json";
+			if (std::filesystem::exists(hotkeyPath))
+			{
+				std::error_code ec;
+				std::filesystem::current_path(p, ec);
+				if (!ec)
+				{
+					in.open("data\\defaulthotkeys.json");
+					if (in.is_open()) { found = true; break; }
+				}
+			}
+		}
+		if (!found)
+		{
+			std::cout << "Warning, data folder is not found. Please use a proper browedit3 distribution, don't try to compile it yourself if you don't know what you're doing" << std::endl;
+			MessageBox(NULL, "Warning, data folder is not found. Please use a proper browedit3 distribution, don't try to compile it yourself if you don't know what you're doing", "Warning, improper use detected", MB_OK);
+			exit(0);
+		}
 	}
 	json j;
 	in >> j;

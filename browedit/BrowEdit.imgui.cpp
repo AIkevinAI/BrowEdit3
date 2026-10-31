@@ -5,6 +5,7 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_glfw.h>
 #include <browedit/gl/Texture.h>
+#include <filesystem>
 
 bool BrowEdit::imguiBegin()
 {
@@ -48,6 +49,28 @@ bool BrowEdit::imguiBegin()
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
     io.Fonts->AddFontFromFileTTF("data/segoeui.ttf", 20.0f);
     //font = io.Fonts->AddFontFromFileTTF("data/BATANG.ttf", 20.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+
+    ImFontConfig cjkCfg;
+    cjkCfg.MergeMode = true;
+    cjkCfg.OversampleH = 1;
+    cjkCfg.OversampleV = 1;
+    cjkCfg.PixelSnapH = true;
+    const char* cjkFontPaths[] = {
+        "C:\\Windows\\Fonts\\msyh.ttc",
+        "C:\\Windows\\Fonts\\msyh.ttf",
+        "C:\\Windows\\Fonts\\msyhbd.ttc",
+        "C:\\Windows\\Fonts\\simhei.ttf",
+        "C:\\Windows\\Fonts\\simsun.ttc",
+        "C:\\Windows\\Fonts\\Deng.ttf",
+    };
+    for (auto p : cjkFontPaths)
+    {
+        if (std::filesystem::exists(p))
+        {
+            io.Fonts->AddFontFromFileTTF(p, 20.0f, &cjkCfg, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+            break;
+        }
+    }
     io.Fonts->Build();
 
     //    io.Fonts->AddFontFromFileTTF("myfontfile.ttf", size_in_pixels, NULL, io.Fonts->GetGlyphRangesJapanese());  // Load Japanese characters

@@ -166,6 +166,9 @@
     <ClCompile Include="browedit\util\FileIO.cpp">
       <Filter>browedit\util</Filter>
     </ClCompile>
+    <ClCompile Include="browedit\util\I18n.cpp">
+      <Filter>browedit\util</Filter>
+    </ClCompile>
     <ClCompile Include="browedit\components\Rsm.cpp">
       <Filter>browedit\components</Filter>
     </ClCompile>
@@ -544,6 +547,9 @@
       <Filter>browedit</Filter>
     </ClInclude>
     <ClInclude Include="browedit\util\FileIO.h">
+      <Filter>browedit\util</Filter>
+    </ClInclude>
+    <ClInclude Include="browedit\util\I18n.h">
       <Filter>browedit\util</Filter>
     </ClInclude>
     <ClInclude Include="browedit\components\Rsm.h">

@@ -28,6 +28,7 @@
 #include <browedit/components/RsmRenderer.h>
 #include <browedit/util/FileIO.h>
 #include <browedit/util/Util.h>
+#include <browedit/util/I18n.h>
 #include <browedit/util/Console.h>
 #include <browedit/util/ResourceManager.h>
 #include <browedit/util/glfw_keycodes_to_string.h>
@@ -183,14 +184,14 @@ void BrowEdit::run()
 //		loadMap("data\\maze_new.rsw");
 
 		//loadModel("data\\model\\prontera_re\\streetlamp_01.rsm");
-	//	loadModel("data\\model\\Å©¸®½º¸¶½º¸¶À»\\xmas_³»ºÎÆ®¸®.rsm");
-	//	loadModel("data\\model\\ÀÎ´ø02\\ÀÎ´ø02bÁß¾ÓÀå½Ä01.rsm");
-		//loadModel("data\\model\\event\\3Â÷ÀüÁ÷_¼®»ó02.rsm"); //bigass statue
+	//	loadModel("data\\model\\Å©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\\xmas_ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½.rsm");
+	//	loadModel("data\\model\\ï¿½Î´ï¿½02\\ï¿½Î´ï¿½02bï¿½ß¾ï¿½ï¿½ï¿½ï¿½01.rsm");
+		//loadModel("data\\model\\event\\3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½02.rsm"); //bigass statue
 		//loadModel("data\\model\\para\\alchemy_01.rsm");
 		//loadModel("data\\model\\para\\mora_01.rsm");
 		//loadModel("data\\model\\para\\mora_02.rsm");
 		//loadModel("data\\model\\masin\\fire_land.rsm");
-		//loadModel("data\\modelÀÎ´ø02ÀÎ´ø02¹ÌÀÌ¶ó.rsm");
+		//loadModel("data\\modelï¿½Î´ï¿½02ï¿½Î´ï¿½02ï¿½ï¿½ï¿½Ì¶ï¿½.rsm");
 		//loadModel("data\\model\\pud\\stall_01.rsm");
 		//loadModel("data\\model\\pud\\stall_02.rsm");
 		//loadModel("data\\model\\pud\\stall_03.rsm");
@@ -198,7 +199,7 @@ void BrowEdit::run()
 		//loadModel("data\\model\\pud\\balloon_01.rsm");
 		//loadModel("data\\model\\plants_e_01.rsm2");
 	//	modelEditor.load("data\\model\\para\\mora_01.rsm");
-		//modelEditor.load("data\\model\\ÇÁ·ÐÅ×¶ó\\±³¿ª¼Ò.rsm");
+		//modelEditor.load("data\\model\\ï¿½ï¿½ï¿½ï¿½ï¿½×¶ï¿½\\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.rsm");
 		//modelEditor.load("data\\model\\ilusion\\goldberg_s_01.rsm2");
 		//modelEditor.load("data\\model\\job4for\\purifier_s_01.rsm2");
 #endif
@@ -491,6 +492,7 @@ void BrowEdit::configBegin()
 		util::FileIO::addDirectory(".\\");
 		util::FileIO::end();
 	}
+	i18n::setLanguage(config.language);
 }
 
 

@@ -10,6 +10,7 @@
 #include <browedit/gl/Texture.h>
 #include <browedit/Node.h>
 #include <browedit/HotkeyRegistry.h>
+#include <browedit/util/I18n.h>
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui.h>
@@ -29,74 +30,74 @@ void BrowEdit::toolbar()
 	ImGui::Begin("Toolbar", 0, toolbarFlags);
 
 		if (editMode == EditMode::Texture)
-		ImGui::Text("Texture");
+		ImGui::Text(_("Texture"));
 	else if (editMode == EditMode::Height)
-		ImGui::Text("Height");
+		ImGui::Text(_("Height"));
 	else if (editMode == EditMode::Object)
-		ImGui::Text("Object");
+		ImGui::Text(_("Object"));
 	else if (editMode == EditMode::Gat)
-		ImGui::Text("GAT");
+		ImGui::Text(_("GAT"));
 	else if (editMode == EditMode::Wall)
-		ImGui::Text("Wall");
+		ImGui::Text(_("Wall"));
 	else if (editMode == EditMode::Color)
-		ImGui::Text("Color");
+		ImGui::Text(_("Color"));
 	else if (editMode == EditMode::Shadow)
-		ImGui::Text("Shadow");
+		ImGui::Text(_("Shadow"));
 	else if (editMode == EditMode::Sprite)
-		ImGui::Text("Sprite");
+		ImGui::Text(_("Sprite"));
 	else if (editMode == EditMode::Cinematic)
-		ImGui::Text("Cinematic");
+		ImGui::Text(_("Cinematic"));
 	else if (editMode == EditMode::Water)
-			ImGui::Text("Water");
+			ImGui::Text(_("Water"));
 	else
-		ImGui::Text("???");
+		ImGui::Text(_("???"));
 	ImGui::SameLine();
 	ImGui::SetCursorPosX(125);
 
-	toolBarToggleButton("heightmode", ICON_EDIT_HEIGHT, editMode == EditMode::Height, "Height edit mode", HotkeyAction::EditMode_Height, config.toolbarButtonsHeightEdit);
+	toolBarToggleButton("heightmode", ICON_EDIT_HEIGHT, editMode == EditMode::Height, _("Height edit mode"), HotkeyAction::EditMode_Height, config.toolbarButtonsHeightEdit);
 	ImGui::SameLine();
-	toolBarToggleButton("texturemode", ICON_EDIT_TEXTURE, editMode == EditMode::Texture, "Texture edit mode", HotkeyAction::EditMode_Texture, config.toolbarButtonsTextureEdit);
+	toolBarToggleButton("texturemode", ICON_EDIT_TEXTURE, editMode == EditMode::Texture, _("Texture edit mode"), HotkeyAction::EditMode_Texture, config.toolbarButtonsTextureEdit);
 	ImGui::SameLine();
-	toolBarToggleButton("objectmode", ICON_EDIT_OBJECT, editMode == EditMode::Object, "Object edit mode", HotkeyAction::EditMode_Object, config.toolbarButtonsObjectEdit);
+	toolBarToggleButton("objectmode", ICON_EDIT_OBJECT, editMode == EditMode::Object, _("Object edit mode"), HotkeyAction::EditMode_Object, config.toolbarButtonsObjectEdit);
 	ImGui::SameLine();
-	toolBarToggleButton("gatmode", ICON_EDIT_GAT, editMode == EditMode::Gat, "Gat edit mode", HotkeyAction::EditMode_Gat, config.toolbarButtonsGatEdit);
+	toolBarToggleButton("gatmode", ICON_EDIT_GAT, editMode == EditMode::Gat, _("Gat edit mode"), HotkeyAction::EditMode_Gat, config.toolbarButtonsGatEdit);
 	ImGui::SameLine();
-	toolBarToggleButton("wallmode", ICON_EDIT_WALL, editMode == EditMode::Wall, "Wall edit mode", HotkeyAction::EditMode_Wall, config.toolbarButtonsWallEdit);
+	toolBarToggleButton("wallmode", ICON_EDIT_WALL, editMode == EditMode::Wall, _("Wall edit mode"), HotkeyAction::EditMode_Wall, config.toolbarButtonsWallEdit);
 	ImGui::SameLine();
-	toolBarToggleButton("color", ICON_EDIT_COLOR, editMode == EditMode::Color, "Color edit mode", HotkeyAction::EditMode_Color, config.toolbarButtonsWallEdit);
+	toolBarToggleButton("color", ICON_EDIT_COLOR, editMode == EditMode::Color, _("Color edit mode"), HotkeyAction::EditMode_Color, config.toolbarButtonsWallEdit);
 	ImGui::SameLine();
-	toolBarToggleButton("shadow", ICON_EDIT_SHADOW, editMode == EditMode::Shadow, "Shadow edit mode", HotkeyAction::EditMode_Shadow, config.toolbarButtonsWallEdit);
+	toolBarToggleButton("shadow", ICON_EDIT_SHADOW, editMode == EditMode::Shadow, _("Shadow edit mode"), HotkeyAction::EditMode_Shadow, config.toolbarButtonsWallEdit);
 	ImGui::SameLine();
-	toolBarToggleButton("sprite", ICON_EDIT_SPRITE, editMode == EditMode::Sprite, "Sprite edit mode", HotkeyAction::EditMode_Sprite, config.toolbarButtonsWallEdit);
+	toolBarToggleButton("sprite", ICON_EDIT_SPRITE, editMode == EditMode::Sprite, _("Sprite edit mode"), HotkeyAction::EditMode_Sprite, config.toolbarButtonsWallEdit);
 	ImGui::SameLine();
-	toolBarToggleButton("cinematic", ICON_EDIT_CINEMATIC, editMode == EditMode::Cinematic, "Cinematic Mode", HotkeyAction::EditMode_Cinematic, config.toolbarButtonsWallEdit);
+	toolBarToggleButton("cinematic", ICON_EDIT_CINEMATIC, editMode == EditMode::Cinematic, _("Cinematic Mode"), HotkeyAction::EditMode_Cinematic, config.toolbarButtonsWallEdit);
 	ImGui::SameLine();
-	toolBarToggleButton("watermode", ICON_VIEW_WATER_ON, editMode == EditMode::Water, "Water edit mode", HotkeyAction::EditMode_Water, config.toolbarButtonsWallEdit);
+	toolBarToggleButton("watermode", ICON_VIEW_WATER_ON, editMode == EditMode::Water, _("Water edit mode"), HotkeyAction::EditMode_Water, config.toolbarButtonsWallEdit);
 	ImGuiContext& g = *GImGui;
 	ImGui::SameLine(125 + 10 * (config.toolbarButtonSize + g.Style.ItemSpacing.x));
 
 	if (editMode == EditMode::Object)
 	{
-		toolBarToggleButton("showObjectWindow", windowData.objectWindowVisible ? ICON_OBJECTPICKER_OPEN : ICON_OBJECTPICKER_CLOSE, windowData.objectWindowVisible, "Toggle object window", HotkeyAction::ObjectEdit_ToggleObjectWindow, config.toolbarButtonsObjectEdit);
+		toolBarToggleButton("showObjectWindow", windowData.objectWindowVisible ? ICON_OBJECTPICKER_OPEN : ICON_OBJECTPICKER_CLOSE, windowData.objectWindowVisible, _("Toggle object window"), HotkeyAction::ObjectEdit_ToggleObjectWindow, config.toolbarButtonsObjectEdit);
 		ImGui::SameLine();
 	}
 	if (editMode == EditMode::Texture)
 	{
-		toolBarToggleButton("showTextureWindow", windowData.textureManageWindowVisible ? ICON_TEXTUREPICKER_OPEN : ICON_TEXTUREPICKER_CLOSE, windowData.textureManageWindowVisible, "Toggle texture window", HotkeyAction::TextureEdit_ToggleTextureWindow, config.toolbarButtonsTextureEdit);
+		toolBarToggleButton("showTextureWindow", windowData.textureManageWindowVisible ? ICON_TEXTUREPICKER_OPEN : ICON_TEXTUREPICKER_CLOSE, windowData.textureManageWindowVisible, _("Toggle texture window"), HotkeyAction::TextureEdit_ToggleTextureWindow, config.toolbarButtonsTextureEdit);
 		ImGui::SameLine();
 	}
 
 
-	if (toolBarToggleButton("undo", ICON_UNDO, false, "Undo") && activeMapView)
+	if (toolBarToggleButton("undo", ICON_UNDO, false, _("Undo")) && activeMapView)
 		HotkeyRegistry::runAction(HotkeyAction::Global_Undo);
 	ImGui::SameLine();
-	if (toolBarToggleButton("redo", ICON_REDO, false, "Redo") && activeMapView)
+	if (toolBarToggleButton("redo", ICON_REDO, false, _("Redo")) && activeMapView)
 		HotkeyRegistry::runAction(HotkeyAction::Global_Redo);
 	ImGui::SameLine();
-	if (toolBarToggleButton("copy", ICON_COPY, false, "Copy") && activeMapView)
+	if (toolBarToggleButton("copy", ICON_COPY, false, _("Copy")) && activeMapView)
 		activeMapView->map->copySelection();
 	ImGui::SameLine();
-	if (toolBarToggleButton("paste", ICON_PASTE, false, "Paste") && activeMapView)
+	if (toolBarToggleButton("paste", ICON_PASTE, false, _("Paste")) && activeMapView)
 		activeMapView->map->pasteSelection(this);
 	ImGui::SameLine();
 

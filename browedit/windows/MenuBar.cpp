@@ -20,21 +20,22 @@
 #include <GLFW/glfw3.h>
 #include <imgui_internal.h>
 #include <fstream>
+#include <browedit/util/I18n.h>
 
 void BrowEdit::menuBar()
 {
 	ImGui::BeginMainMenuBar();
-	if (ImGui::BeginMenu("File"))
+	if (ImGui::BeginMenu(_("File")))
 	{
-		hotkeyMenuItem("New", HotkeyAction::Global_New);
-		hotkeyMenuItem("Open", HotkeyAction::Global_Load);
+		hotkeyMenuItem(_("New"), HotkeyAction::Global_New);
+		hotkeyMenuItem(_("Open"), HotkeyAction::Global_Load);
 		if(activeMapView)
-			hotkeyMenuItem("Save " + activeMapView->map->name, HotkeyAction::Global_Save);
-		if (activeMapView && ImGui::MenuItem("Save as "))
+			hotkeyMenuItem(std::string(_("Save ")) + activeMapView->map->name, HotkeyAction::Global_Save);
+		if (activeMapView && ImGui::MenuItem(_("Save as ")))
 			saveAsMap(activeMapView->map);
-		if (activeMapView && ImGui::MenuItem("Export to folder"))
+		if (activeMapView && ImGui::MenuItem(_("Export to folder")))
 			exportMap(activeMapView->map);
-		if (ImGui::BeginMenu("Recent Maps", config.recentFiles.size() > 0))
+		if (ImGui::BeginMenu(_("Recent Maps"), config.recentFiles.size() > 0))
 		{
 			for (const auto& m : config.recentFiles)
 				if (ImGui::MenuItem(m.c_str()))
@@ -44,7 +45,7 @@ void BrowEdit::menuBar()
 				}
 			ImGui::EndMenu();
 		}
-		if (activeMapView && ImGui::MenuItem("Export mapdata for lightmapping"))
+		if (activeMapView && ImGui::MenuItem(_("Export mapdata for lightmapping")))
 		{
 			nlohmann::json mapData;
 			auto rsw = activeMapView->map->rootNode->getComponent<Rsw>();
@@ -82,77 +83,77 @@ void BrowEdit::menuBar()
 			std::ofstream mapDataFile("mapdata.json");
 			mapDataFile << std::setw(2) << mapData;
 		}
-		hotkeyMenuItem("Open Model Editor", HotkeyAction::Global_ModelEditor_Open);
-		hotkeyMenuItem("Quit", HotkeyAction::Global_Exit);
+		hotkeyMenuItem(_("Open Model Editor"), HotkeyAction::Global_ModelEditor_Open);
+		hotkeyMenuItem(_("Quit"), HotkeyAction::Global_Exit);
 		ImGui::EndMenu();
 	}
-	if (ImGui::BeginMenu("Edit"))
+	if (ImGui::BeginMenu(_("Edit")))
 	{
-		hotkeyMenuItem("Undo", HotkeyAction::Global_Undo);
-		hotkeyMenuItem("Redo", HotkeyAction::Global_Redo);
+		hotkeyMenuItem(_("Undo"), HotkeyAction::Global_Undo);
+		hotkeyMenuItem(_("Redo"), HotkeyAction::Global_Redo);
 
 		if (editMode == EditMode::Object)
 		{
-			hotkeyMenuItem("Copy", HotkeyAction::Global_Copy);
-			hotkeyMenuItem("Paste", HotkeyAction::Global_Paste);
+			hotkeyMenuItem(_("Copy"), HotkeyAction::Global_Copy);
+			hotkeyMenuItem(_("Paste"), HotkeyAction::Global_Paste);
 		}
 
-		if (ImGui::MenuItem("Toggle Undo Window", nullptr, windowData.undoVisible))
+		if (ImGui::MenuItem(_("Toggle Undo Window"), nullptr, windowData.undoVisible))
 			windowData.undoVisible = !windowData.undoVisible;
-		hotkeyMenuItem("Global Settings", HotkeyAction::Global_Settings);
+		hotkeyMenuItem(_("Global Settings"), HotkeyAction::Global_Settings);
 
-		if (ImGui::MenuItem("Hotkey Settings"))
+		if (ImGui::MenuItem(_("Hotkey Settings")))
 		{
 			windowData.hotkeyEditWindowVisible = true;
 			windowData.hotkeys = config.hotkeys;
-		}			
-		if (ImGui::MenuItem("Demo Window", nullptr, windowData.demoWindowVisible))
+		}
+		if (ImGui::MenuItem(_("Demo Window"), nullptr, windowData.demoWindowVisible))
 			windowData.demoWindowVisible = !windowData.demoWindowVisible;
-		hotkeyMenuItem("Reload Textures", HotkeyAction::Global_ReloadTextures);
-		hotkeyMenuItem("Reload Models", HotkeyAction::Global_ReloadModels);
+		hotkeyMenuItem(_("Reload Textures"), HotkeyAction::Global_ReloadTextures);
+		hotkeyMenuItem(_("Reload Models"), HotkeyAction::Global_ReloadModels);
 		ImGui::EndMenu();
 	}
-	if (editMode == EditMode::Object && activeMapView && ImGui::BeginMenu("Object Selection"))
+	if (editMode == EditMode::Object && activeMapView && ImGui::BeginMenu(_("Object Selection")))
 	{
-		if (ImGui::BeginMenu("Grow/shrink Selection"))
+		if (ImGui::BeginMenu(_("Grow/shrink Selection")))
 		{
-			if (ImGui::MenuItem("Select same models"))
+			if (ImGui::MenuItem(_("Select same models")))
 				activeMapView->map->selectSameModels(this);
 			static float nearDistance = 50;
 			ImGui::SetNextItemWidth(100.0f);
-			ImGui::DragFloat("Near Distance", &nearDistance, 1.0f, 0.0f, 1000.0f);
-			if (ImGui::MenuItem("Select objects near"))
+			ImGui::DragFloat(_("Near Distance"), &nearDistance, 1.0f, 0.0f, 1000.0f);
+			if (ImGui::MenuItem(_("Select objects near")))
 				activeMapView->map->selectNear(nearDistance, this);
-			if (ImGui::BeginMenu("Select all"))
+			if (ImGui::BeginMenu(_("Select all")))
 			{
-				hotkeyMenuItem("Select all", HotkeyAction::ObjectEdit_SelectAll);
-				hotkeyMenuItem("Select all models", HotkeyAction::ObjectEdit_SelectAllModels);
-				hotkeyMenuItem("Select all effects", HotkeyAction::ObjectEdit_SelectAllEffects);
-				hotkeyMenuItem("Select all sounds", HotkeyAction::ObjectEdit_SelectAllSounds);
-				hotkeyMenuItem("Select all lights", HotkeyAction::ObjectEdit_SelectAllLights);
+				hotkeyMenuItem(_("Select all"), HotkeyAction::ObjectEdit_SelectAll);
+				hotkeyMenuItem(_("Select all models"), HotkeyAction::ObjectEdit_SelectAllModels);
+				hotkeyMenuItem(_("Select all effects"), HotkeyAction::ObjectEdit_SelectAllEffects);
+				hotkeyMenuItem(_("Select all sounds"), HotkeyAction::ObjectEdit_SelectAllSounds);
+				hotkeyMenuItem(_("Select all lights"), HotkeyAction::ObjectEdit_SelectAllLights);
 				ImGui::EndMenu();
 			}
-			hotkeyMenuItem("Invert selection", HotkeyAction::ObjectEdit_InvertSelection);
+			hotkeyMenuItem(_("Invert selection"), HotkeyAction::ObjectEdit_InvertSelection);
 			ImGui::EndMenu();
 		}
-		hotkeyMenuItem("Flip horizontally", HotkeyAction::ObjectEdit_FlipHorizontal);
-		hotkeyMenuItem("Flip vertically", HotkeyAction::ObjectEdit_FlipVertical);
+		hotkeyMenuItem(_("Flip horizontally"), HotkeyAction::ObjectEdit_FlipHorizontal);
+		hotkeyMenuItem(_("Flip vertically"), HotkeyAction::ObjectEdit_FlipVertical);
 
-		hotkeyMenuItem("Invert Scale X", HotkeyAction::ObjectEdit_InvertScaleX);
-		hotkeyMenuItem("Invert Scale Y", HotkeyAction::ObjectEdit_InvertScaleY);
-		hotkeyMenuItem("Invert Scale Z", HotkeyAction::ObjectEdit_InvertScaleZ);
+		hotkeyMenuItem(_("Invert Scale X"), HotkeyAction::ObjectEdit_InvertScaleX);
+		hotkeyMenuItem(_("Invert Scale Y"), HotkeyAction::ObjectEdit_InvertScaleY);
+		hotkeyMenuItem(_("Invert Scale Z"), HotkeyAction::ObjectEdit_InvertScaleZ);
 
-		hotkeyMenuItem("Create Prefab", HotkeyAction::ObjectEdit_CreatePrefab);
-		hotkeyMenuItem("Delete", HotkeyAction::ObjectEdit_Delete);
-		hotkeyMenuItem("Focus on selection", HotkeyAction::ObjectEdit_FocusOnSelection);
-		if (ImGui::MenuItem("Set to floor height") && activeMapView)
+		hotkeyMenuItem(_("Create Prefab"), HotkeyAction::ObjectEdit_CreatePrefab);
+		hotkeyMenuItem(_("Delete"), HotkeyAction::ObjectEdit_Delete);
+		hotkeyMenuItem(_("Focus on selection"), HotkeyAction::ObjectEdit_FocusOnSelection);
+		if (ImGui::MenuItem(_("Set to floor height")) && activeMapView)
 			activeMapView->map->setSelectedItemsToFloorHeight(this);
 
 		ImGui::EndMenu();
 	}
-	if (editMode == EditMode::Object && activeMapView && ImGui::BeginMenu("Light Edit"))
+	if (editMode == EditMode::Object && activeMapView && ImGui::BeginMenu(_("Light Edit")))
 	{
-		if (ImGui::MenuItem("Add new light")) {
+		if (ImGui::MenuItem(_("Add new light"))) {
 			auto l = new RswLight();
 			l->range = 60.0f;
 			l->color = glm::vec3(0.8f, 0.8f, 0.8f);
@@ -166,7 +167,7 @@ void BrowEdit::menuBar()
 			newNodePlacement = BrowEdit::Relative;
 		}
 
-		if (ImGui::MenuItem("Add new sun")) {
+		if (ImGui::MenuItem(_("Add new sun"))) {
 			auto l = new RswLight();
 			l->range = 0.0f;
 			l->intensity = 0.5f;
@@ -185,7 +186,7 @@ void BrowEdit::menuBar()
 			newNodePlacement = BrowEdit::Ground;
 		}
 
-		if (ImGui::MenuItem("Select all lights")) {
+		if (ImGui::MenuItem(_("Select all lights"))) {
 			if (activeMapView)
 				activeMapView->map->selectAll<RswLight>(this);
 		}
@@ -196,66 +197,66 @@ void BrowEdit::menuBar()
 	if(activeMapView)
 	if (ImGui::BeginMenu(activeMapView->map->name.c_str()))
 	{
-		if (ImGui::MenuItem("Open new view"))
+		if (ImGui::MenuItem(_("Open new view")))
 			loadMap(activeMapView->map->name);
-		if (ImGui::BeginMenu("Import/Export maps"))
+		if (ImGui::BeginMenu(_("Import/Export maps")))
 		{
 			static bool exportWalls = true;
 			static bool exportBorders = true;
 			ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
-			ImGui::MenuItem("Import/Export Walls", nullptr, &exportWalls);
-			ImGui::MenuItem("Import/Export Borders", nullptr, &exportBorders);
+			ImGui::MenuItem(_("Import/Export Walls"), nullptr, &exportWalls);
+			ImGui::MenuItem(_("Import/Export Borders"), nullptr, &exportBorders);
 			ImGui::PopItemFlag();
 			ImGui::Separator();
-			if (ImGui::MenuItem("Export shadowmap"))
+			if (ImGui::MenuItem(_("Export shadowmap")))
 				activeMapView->map->exportShadowMap(this, exportWalls, exportBorders);
-			if (ImGui::MenuItem("Export colormap"))
+			if (ImGui::MenuItem(_("Export colormap")))
 				activeMapView->map->exportLightMap(this, exportWalls, exportBorders);
-			if (ImGui::MenuItem("Export tile colors"))
+			if (ImGui::MenuItem(_("Export tile colors")))
 				activeMapView->map->exportTileColors(this, exportWalls);
-			if (ImGui::MenuItem("Export minimap"))
+			if (ImGui::MenuItem(_("Export minimap")))
 				activeMapView->map->exportMinimapWalkable(this);
 			ImGui::Separator();
-			if (ImGui::MenuItem("Import shadowmap"))
+			if (ImGui::MenuItem(_("Import shadowmap")))
 				activeMapView->map->importShadowMap(this, exportWalls, exportBorders);
-			if (ImGui::MenuItem("Import colormap"))
+			if (ImGui::MenuItem(_("Import colormap")))
 				activeMapView->map->importLightMap(this, exportWalls, exportBorders);
-			if (ImGui::MenuItem("Import tile colors"))
+			if (ImGui::MenuItem(_("Import tile colors")))
 				activeMapView->map->importTileColors(this, exportWalls);
 
 
 			ImGui::EndMenu();
 		}
-		hotkeyMenuItem("Calculate Quadtree", HotkeyAction::Global_CalculateQuadtree);
-		hotkeyMenuItem("Calculate lightmaps", HotkeyAction::Global_CalculateLightmaps);
-		if (ImGui::MenuItem("Make tiles unique"))
+		hotkeyMenuItem(_("Calculate Quadtree"), HotkeyAction::Global_CalculateQuadtree);
+		hotkeyMenuItem(_("Calculate lightmaps"), HotkeyAction::Global_CalculateLightmaps);
+		if (ImGui::MenuItem(_("Make tiles unique")))
 			activeMapView->map->rootNode->getComponent<Gnd>()->makeTilesUnique();
-		hotkeyMenuItem("Remove zero height walls", HotkeyAction::Global_ClearZeroHeightWalls);
-		if (ImGui::MenuItem("Remove unused ground textures"))
+		hotkeyMenuItem(_("Remove zero height walls"), HotkeyAction::Global_ClearZeroHeightWalls);
+		if (ImGui::MenuItem(_("Remove unused ground textures")))
 			activeMapView->map->rootNode->getComponent<Gnd>()->removeUnusedTextures(this);
-		if (ImGui::MenuItem("Clean Tiles"))
+		if (ImGui::MenuItem(_("Clean Tiles")))
 			activeMapView->map->rootNode->getComponent<Gnd>()->cleanTiles();
-		if (ImGui::MenuItem("Edit lighting/water/fog")) {
+		if (ImGui::MenuItem(_("Edit lighting/water/fog"))) {
 			editMode = EditMode::Object;
 			activeMapView->map->doAction(new SelectAction(activeMapView->map, activeMapView->map->rootNode, false, false), this);
 		}
-		if (ImGui::MenuItem("Fix lightmap borders"))
+		if (ImGui::MenuItem(_("Fix lightmap borders")))
 			activeMapView->map->rootNode->getComponent<Gnd>()->makeLightmapBorders(this);
-		if (ImGui::MenuItem("Clear lightmaps"))
+		if (ImGui::MenuItem(_("Clear lightmaps")))
 			activeMapView->map->rootNode->getComponent<Gnd>()->makeLightmapsClear();
-		if (ImGui::MenuItem("Smoothen lightmaps"))
+		if (ImGui::MenuItem(_("Smoothen lightmaps")))
 			activeMapView->map->rootNode->getComponent<Gnd>()->makeLightmapsSmooth(this);
-		if (ImGui::MenuItem("Make lightmaps unique"))
+		if (ImGui::MenuItem(_("Make lightmaps unique")))
 			activeMapView->map->rootNode->getComponent<Gnd>()->makeLightmapsUnique();
-		if (ImGui::MenuItem("Clean up lightmaps"))
+		if (ImGui::MenuItem(_("Clean up lightmaps")))
 			activeMapView->map->rootNode->getComponent<Gnd>()->cleanLightmaps();
 		static int s[2] = { activeMapView->map->rootNode->getComponent<Gnd>()->lightmapWidth, activeMapView->map->rootNode->getComponent<Gnd>()->lightmapHeight };
 		ImGui::InputInt2("##lightmapRes", s);
 		ImGui::SameLine();
-		if (ImGui::MenuItem("Change Lightmap Resolution"))
+		if (ImGui::MenuItem(_("Change Lightmap Resolution")))
 			activeMapView->map->rootNode->getComponent<Gnd>()->makeLightmapsDiffRes(s[0], s[1]);
 
-		if (activeMapView->map->name == "data\\effects_ro.rsw" && ImGui::MenuItem("Generate effects")) //speedrun map
+		if (activeMapView->map->name == "data\\effects_ro.rsw" && ImGui::MenuItem(_("Generate effects"))) //speedrun map
 		{
 			auto effectsFile = util::FileIO::open("data\\EffectTable.json");
 			int braces = 0;
@@ -415,11 +416,11 @@ void BrowEdit::menuBar()
 			{
 				if (ImGui::BeginMenu(mv.viewName.c_str()))
 				{
-					if (ImGui::BeginMenu("High Res Screenshot"))
+					if (ImGui::BeginMenu(_("High Res Screenshot")))
 					{
 						static int size[2] = { 2048, 2048 };
-						ImGui::DragInt2("Size", size);
-						if (ImGui::MenuItem("Save"))
+						ImGui::DragInt2(_("Size"), size);
+						if (ImGui::MenuItem(_("Save")))
 						{
 							std::string filename = util::SaveAsDialog("screenshot.png", "All\0*.*\0Png\0*.png");
 							if (filename != "")
@@ -438,7 +439,7 @@ void BrowEdit::menuBar()
 		ImGui::EndMenu();
 	}
 
-	if (ImGui::MenuItem("Help"))
+	if (ImGui::MenuItem(_("Help")))
 		windowData.helpWindowVisible = true;
 
 	ImGui::EndMainMenuBar();

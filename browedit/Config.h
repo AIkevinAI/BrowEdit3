@@ -55,6 +55,7 @@ public:
 	int lightmapperThreadCount = 4;
 	int lightmapperRefreshTimer = 2;
 	bool additiveShadow = true;
+	std::string language = "en";
 	std::string isValid() const;
 	bool showWindow(BrowEdit* browEdit);
 	void setupFileIO();
@@ -94,5 +95,6 @@ public:
 		lightmapperThreadCount,
 		lightmapperRefreshTimer,
 		additiveShadow,
-		startMaximizedWindow);
+		startMaximizedWindow,
+		language);
 };
